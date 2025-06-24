@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像スライダー</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .slider-wrapper {
+            width: 250px; /* スライダー全体の幅を固定 */
+            height: auto; /* 高さはコンテンツに合わせて自動調整 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            touch-action: pan-y;
+            cursor: grab;
+        }
+
+        .slider-item {
+            position: relative;
+            min-width: 100%;
+            flex-shrink: 0;
+            /* 正方形の固定サイズ */
+            width: 250px; /* slider-wrapperの幅と同じにする */
+            height: 250px; /* 幅と同じにして正方形にする */
+            overflow: hidden; /* はみ出した画像を隠す */
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover; /* 画像を中央でトリミングし、要素を埋める */
+            object-position: center; /* 中央に配置 */
+        }
+
+        .image-caption {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            z-index: 1; /* キャプションが画像の上に表示されるように */
+        }
+
+        .navigation-controls {
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            background-color: #f8f8f8;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .navigation-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: #007bff;
+        }
+
+        .arrow {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+
+        .arrow:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-wrapper">
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233158.png?raw=true" alt="画像4 (複製)">
+                </div>
+
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233331.png?raw=true" alt="画像1">
+                    <div class="image-caption">現在のアイコン</div>
+                </div>
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233304.png?raw=true" alt="画像2">
+                </div>
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233241.png?raw=true" alt="画像3">
+                </div>
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233158.png?raw=true" alt="画像4">
+                </div>
+
+                <div class="slider-item">
+                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233331.png?raw=true" alt="画像1 (複製)">
+                    <div class="image-caption">現在のアイコン</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation-controls">
+            <button class="arrow left" onclick="prevSlide()">&#10094;</button>
+            <div class="navigation-dots">
+                </div>
+            <button class="arrow right" onclick="nextSlide()">&#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.querySelector('.slider');
+        const dotsContainer = document.querySelector('.navigation-dots');
+        const originalSliderItems = Array.from(document.querySelectorAll('.slider-item')).slice(1, -1);
+        let currentIndex = 0;
+        let startX = 0;
+        let isDragging = false;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+
+        const totalSlides = originalSliderItems.length;
+        const actualSlidesInDOM = document.querySelectorAll('.slider-item').length;
+        let currentSlideDOMIndex = 1; // 初期位置は最初のオリジナル画像 (複製を考慮)
+
+        // ドットの生成（オリジナルの画像数に合わせて生成）
+        function createDots() {
+            dotsContainer.innerHTML = '';
+            originalSliderItems.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.classList.add('dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        // スライドの表示を更新
+        function updateSlider(animate = true) {
+            const slideWidth = document.querySelector('.slider-item').offsetWidth; // 各スライドアイテムの現在の幅を取得
+            const offset = -currentSlideDOMIndex * slideWidth;
+            if (animate) {
+                slider.style.transition = 'transform 0.5s ease-in-out';
+            } else {
+                slider.style.transition = 'none';
+            }
+            setSliderTransform(offset);
+            updateDots();
+        }
+
+        // スライダーのtransformを直接設定
+        function setSliderTransform(translateValue) {
+            slider.style.transform = `translateX(${translateValue}px)`;
+            currentTranslate = translateValue;
+        }
+
+        // ドットのアクティブ状態を更新
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // 次のスライドへ
+        function nextSlide() {
+            currentSlideDOMIndex++;
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+            handleLoopTransition();
+        }
+
+        // 前のスライドへ
+        function prevSlide() {
+            currentSlideDOMIndex--;
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+            handleLoopTransition();
+        }
+
+        // 特定のスライドへ移動 (ドットクリック用)
+        function goToSlide(index) {
+            currentIndex = index;
+            currentSlideDOMIndex = index + 1;
+            updateSlider();
+        }
+
+        // ループ処理
+        function handleLoopTransition() {
+            slider.addEventListener('transitionend', () => {
+                if (currentSlideDOMIndex >= actualSlidesInDOM - 1) { // 最後の複製に到達した場合
+                    currentSlideDOMIndex = 1; // 最初のオリジナルに戻る
+                    currentIndex = 0;
+                    updateSlider(false); // アニメーションなしで瞬間移動
+                } else if (currentSlideDOMIndex <= 0) { // 最初の複製に到達した場合
+                    currentSlideDOMIndex = actualSlidesInDOM - 2; // 最後のオリジナルに戻る
+                    currentIndex = totalSlides - 1;
+                    updateSlider(false); // アニメーションなしで瞬間移動
+                }
+            }, { once: true });
+        }
+
+        // --- スワイプイベント処理 ---
+
+        // ドラッグ開始
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            prevTranslate = currentTranslate;
+            slider.style.transition = 'none';
+        });
+
+        slider.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+            prevTranslate = currentTranslate;
+            slider.style.transition = 'none';
+            slider.style.cursor = 'grabbing';
+        });
+
+        // ドラッグ中
+        slider.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diffX = currentX - startX;
+            setSliderTransform(prevTranslate + diffX);
+        });
+
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.clientX;
+            const diffX = currentX - startX;
+            setSliderTransform(prevTranslate + diffX);
+        });
+
+        // ドラッグ終了
+        slider.addEventListener('touchend', (e) => {
+            isDragging = false;
+            slider.style.transition = 'transform 0.5s ease-in-out';
+            slider.style.cursor = 'grab';
+
+            const movedBy = currentTranslate - prevTranslate;
+            const threshold = document.querySelector('.slider-item').offsetWidth * 0.2;
+
+            if (movedBy < -threshold) {
+                currentSlideDOMIndex++;
+            } else if (movedBy > threshold) {
+                currentSlideDOMIndex--;
+            }
+            currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+            handleLoopTransition();
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDragging = false;
+            slider.style.transition = 'transform 0.5s ease-in-out';
+            slider.style.cursor = 'grab';
+
+            const movedBy = currentTranslate - prevTranslate;
+            const threshold = document.querySelector('.slider-item').offsetWidth * 0.2;
+
+            if (movedBy < -threshold) {
+                currentSlideDOMIndex++;
+            } else if (movedBy > threshold) {
+                currentSlideDOMIndex--;
+            }
+            currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+            handleLoopTransition();
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            if (isDragging) {
+                isDragging = false;
+                slider.style.transition = 'transform 0.5s ease-in-out';
+                slider.style.cursor = 'grab';
+                currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
+                updateSlider();
+                handleLoopTransition();
+            }
+        });
+
+        // ウィンドウのリサイズ時にスライダーを再計算
+        window.addEventListener('resize', () => {
+            updateSlider(false);
+        });
+
+        // 初期化
+        createDots();
+        updateSlider(false);
+    </script>
+</body>
+</html>
