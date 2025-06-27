@@ -3,84 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テストページ</title>
+    <title>My Profile - かける</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+        :root {
+            --primary-color-dark: #5c3bb8;
+            --primary-color-light: #7f5af0;
+            --text-color-dark: #333;
+            --text-color-light: #555;
+            --bg-color-gradient: linear-gradient(to top right, #e3e6f3, #f4f7fc);
+        }
+
         body {
-            font-family: sans-serif;
+            font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: var(--bg-color-gradient);
+            color: var(--text-color-dark);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        .slider-wrapper {
-            width: 250px; /* スライダー全体の幅を固定 */
-            height: auto; /* 高さはコンテンツに合わせて自動調整 */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            border-radius: 8px;
+        .profile-container {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            width: 100%;
+            max-width: 680px;
+            margin: 20px 0;
+            /* ★★★ 初期状態では非表示にして、JSで表示をコントロール ★★★ */
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+        .profile-container.loaded {
+            opacity: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px 40px;
+            background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color-dark));
+            color: #fff;
+            text-align: center;
+        }
+
+        .profile-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+            letter-spacing: 2px;
+        }
+
+        /* --- スライダー --- */
+        .slider-wrapper {
+            width: 280px;
+            height: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #fff;
         }
 
         .slider-container {
             position: relative;
             overflow: hidden;
-            border-radius: 8px 8px 0 0;
         }
 
         .slider {
             display: flex;
-            transition: transform 0.5s ease-in-out;
-            touch-action: pan-y;
-            cursor: grab;
+            user-select: none;
+        }
+        .slider.grabbing {
+            cursor: grabbing;
         }
 
         .slider-item {
-            position: relative;
             min-width: 100%;
             flex-shrink: 0;
-            /* 正方形の固定サイズ */
-            width: 250px; /* slider-wrapperの幅と同じにする */
-            height: 250px; /* 幅と同じにして正方形にする */
-            overflow: hidden; /* はみ出した画像を隠す */
+            height: 280px;
+            overflow: hidden;
+            position: relative;
         }
 
         .slider-item img {
             width: 100%;
             height: 100%;
             display: block;
-            object-fit: cover; /* 画像を中央でトリミングし、要素を埋める */
-            object-position: center; /* 中央に配置 */
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+        .slider-item:hover img {
+            transform: scale(1.08);
         }
 
         .image-caption {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            background-color: rgba(0, 0, 0, 0.6);
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.65);
             color: white;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 0.8em;
-            z-index: 1; /* キャプションが画像の上に表示されるように */
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            z-index: 1;
         }
 
         .navigation-controls {
-            padding: 10px;
+            padding: 12px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            background-color: #f8f8f8;
-            border-radius: 0 0 8px 8px;
+            background-color: #f8f9fa;
             border-top: 1px solid #eee;
+        }
+
+        .arrow {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .arrow:hover {
+            background-color: #e9ecef;
+            color: #000;
         }
 
         .navigation-dots {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .dot {
@@ -89,251 +161,445 @@
             background-color: #ccc;
             border-radius: 50%;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
-
+        .dot:hover {
+            transform: scale(1.2);
+        }
         .dot.active {
-            background-color: #007bff;
+            background-color: var(--primary-color-light);
+            transform: scale(1.3);
         }
 
-        .arrow {
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            cursor: pointer;
-            font-size: 18px;
-            border-radius: 3px;
-            transition: background-color 0.3s ease;
+        /* --- 自己紹介部分 --- */
+        .profile-body {
+            padding: 30px 40px 50px;
+            line-height: 1.8;
+            font-size: 1em;
+            color: var(--text-color-light);
         }
 
-        .arrow:hover {
-            background-color: rgba(0, 0, 0, 0.7);
+        .profile-body h2 {
+            color: var(--primary-color-dark);
+            border-bottom: 2px solid var(--primary-color-dark);
+            padding-bottom: 12px;
+            margin: 40px 0 30px;
+            font-size: 1.6em;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color-dark);
+            line-height: 1.6;
+        }
+        .intro-text strong {
+            font-size: 1.2em;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .section-card {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(92, 59, 184, 0.15);
+        }
+
+        .section-card h3 {
+            color: var(--primary-color-dark);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 10px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px 20px;
+        }
+        .info-grid div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            color: #666;
+        }
+        .info-grid strong {
+            color: var(--primary-color-dark);
+            font-weight: 700;
+            min-width: 60px;
+        }
+
+        .hobby-item {
+            display: inline-block;
+            background-color: #e8e2ff;
+            color: var(--primary-color-dark);
+            padding: 6px 12px;
+            border-radius: 15px;
+            margin: 0 4px;
+            font-size: 0.9em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .hobby-item:hover {
+            background-color: #d8ceff;
+            transform: translateY(-2px);
+        }
+
+        .counter-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color-light);
+            margin-left: 5px;
+        }
+
+        .artist-list {
+            list-style: none;
+            padding: 0;
+        }
+        .artist-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+        }
+        .artist-list li::before {
+            content: '🎵';
+            position: absolute;
+            left: 0;
+            color: #ff5722;
+            font-size: 1.2em;
+        }
+
+        .last-message {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 50px;
+            color: var(--primary-color-dark);
+            letter-spacing: 1px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(127, 90, 240, 0.1), rgba(92, 59, 184, 0.1));
+            border-radius: 10px;
+        }
+
+        /* --- スクロール連動アニメーション --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- レスポンシブ対応 --- */
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .profile-container { border-radius: 0; width: 100%; margin: 0; min-height: 100vh; }
+            .profile-header h1 { font-size: 2.4em; }
+            .profile-body { padding: 20px 25px 40px; }
+            .profile-body h2 { font-size: 1.4em; }
+            .info-grid { grid-template-columns: 1fr; gap: 12px; }
+            .last-message { font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
-    <div class="slider-wrapper">
-        <div class="slider-container">
-            <div class="slider">
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233158.png?raw=true" alt="画像4 (複製)">
-                </div>
 
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233331.png?raw=true" alt="画像1">
-                    <div class="image-caption">現在のアイコン</div>
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>My Profile</h1>
+        <div class="slider-wrapper">
+            <div class="slider-container">
+                <div class="slider">
+                    <div class="slider-item">
+                        <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233331.png?raw=true" alt="現在のアイコン">
+                        <div class="image-caption">現在のアイコン</div>
+                    </div>
+                    <div class="slider-item">
+                        <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233304.png?raw=true" alt="画像2">
+                    </div>
+                    <div class="slider-item">
+                        <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233241.png?raw=true" alt="画像3">
+                    </div>
+                    <div class="slider-item">
+                        <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233158.png?raw=true" alt="画像4">
+                    </div>
                 </div>
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233304.png?raw=true" alt="画像2">
-                </div>
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233241.png?raw=true" alt="画像3">
-                </div>
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233158.png?raw=true" alt="画像4">
-                </div>
-
-                <div class="slider-item">
-                    <img src="https://github.com/kakeru-SuYaRyuu0826/My_Home_Pagesss/blob/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-06-23%20233331.png?raw=true" alt="画像1 (複製)">
-                    <div class="image-caption">現在のアイコン</div>
+            </div>
+            <div class="navigation-controls">
+                <button class="arrow left">&#10094;</button>
+                <div class="navigation-dots"></div>
+                <button class="arrow right">&#10095;</button>
+            </div>
+        </div>
+    </div>
+    <div class="profile-body">
+        <p class="intro-text reveal">
+            <strong>かける / SuYaRyuu0826</strong><br>
+            2009.08.26 | Yamanashi, Japan<br>
+            プログラミングと作詞作曲が好きです！
+        </p>
+        <div class="reveal">
+            <h2>●基本情報●</h2>
+            <div class="section-card">
+                <div class="info-grid">
+                    <div><strong>年齢:</strong><span class="counter-value" data-target="16">0</span>歳</div>
+                    <div><strong>誕生日:</strong>8月26日</div>
+                    <div><strong>血液型:</strong>O型</div>
+                    <div><strong>趣味:</strong><span class="hobby-item">作詞</span> <span class="hobby-item">作曲</span></div>
+                    <div><strong>身長:</strong><span class="counter-value" data-target="177">0</span>cm</div>
+                    <div><strong>性別:</strong>男</div>
                 </div>
             </div>
         </div>
-
-        <div class="navigation-controls">
-            <button class="arrow left" onclick="prevSlide()">&#10094;</button>
-            <div class="navigation-dots">
-                </div>
-            <button class="arrow right" onclick="nextSlide()">&#10095;</button>
+        <div class="reveal">
+            <h2>●活動について●</h2>
+            <div class="section-card">
+                <h3>Scratch & YouTube</h3>
+                <p>
+                    Scratchでの活動をメインに、YouTubeチャンネルも運営しています。<br>
+                    YouTubeでは、自作のオリジナル曲に歌詞を付けた動画を公開していく予定です。将来的には、音楽以外のコンテンツにも挑戦したいと考えています！
+                </p>
+                <p>
+                    Padletでの交流も歓迎です！希望があればボードを作成するので、気軽に声をかけてください。そこでたくさんお話できると嬉しいです！
+                </p>
+            </div>
         </div>
+        <div class="reveal">
+            <h2>●好きなことなどについて●</h2>
+            <div class="section-card">
+                <h3>音楽の好み</h3>
+                <p>作詞と作曲が大好きで、特に<span class="hobby-item">作詞</span>に力を入れています！</p>
+                <p>Mrs. GREEN APPLEと米津玄師が特に好きで、いつも聴いています。中でも、</p>
+                <ul class="artist-list">
+                    <li>点描の唄</li>
+                    <li>アイネクライネ</li>
+                </ul>
+                <p>この2曲は僕にとって特別な曲です。</p>
+            </div>
+        </div>
+        <p class="last-message reveal">
+            気軽に話しかけてね！仲良くしよう！
+        </p>
     </div>
+</div>
 
-    <script>
-        const slider = document.querySelector('.slider');
-        const dotsContainer = document.querySelector('.navigation-dots');
-        const originalSliderItems = Array.from(document.querySelectorAll('.slider-item')).slice(1, -1);
-        let currentIndex = 0;
-        let startX = 0;
-        let isDragging = false;
-        let currentTranslate = 0;
-        let prevTranslate = 0;
+<script>
+// ★★★ エラーが起きにくいように、全体の構造を見直しました ★★★
+document.addEventListener('DOMContentLoaded', () => {
 
-        const totalSlides = originalSliderItems.length;
-        const actualSlidesInDOM = document.querySelectorAll('.slider-item').length;
-        let currentSlideDOMIndex = 1; // 初期位置は最初のオリジナル画像 (複製を考慮)
+    // まず、メインのコンテナを表示させる
+    const profileContainer = document.querySelector('.profile-container');
+    if (profileContainer) {
+        profileContainer.classList.add('loaded');
+    } else {
+        // これがないと何も始まらないので、コンソールにエラーを出す
+        console.error('致命的なエラー: .profile-container が見つかりません。');
+        return;
+    }
 
-        // ドットの生成（オリジナルの画像数に合わせて生成）
-        function createDots() {
-            dotsContainer.innerHTML = '';
-            originalSliderItems.forEach((_, index) => {
-                const dot = document.createElement('span');
-                dot.classList.add('dot');
-                dot.addEventListener('click', () => {
-                    goToSlide(index);
+    // 各機能を個別の関数で安全に実行する
+    setupSlider();
+    setupScrollAnimations();
+
+});
+
+function setupSlider() {
+    // スライダーに必要な要素を最初に全部探す
+    const sliderWrapper = document.querySelector('.slider-wrapper');
+    // 要素が一つでも欠けていたら、スライダー機能は動かさず、エラーも出さない
+    if (!sliderWrapper) return;
+    const slider = sliderWrapper.querySelector('.slider');
+    if (!slider) return;
+    const dotsContainer = sliderWrapper.querySelector('.navigation-dots');
+    if (!dotsContainer) return;
+    const prevButton = sliderWrapper.querySelector('.arrow.left');
+    if (!prevButton) return;
+    const nextButton = sliderWrapper.querySelector('.arrow.right');
+    if (!nextButton) return;
+
+    const originalItems = Array.from(slider.children);
+    const totalSlides = originalItems.length;
+
+    if (totalSlides === 0) return; // 画像がなければ何もしない
+
+    const firstClone = originalItems[0].cloneNode(true);
+    const lastClone = originalItems[totalSlides - 1].cloneNode(true);
+    slider.appendChild(firstClone);
+    slider.insertBefore(lastClone, originalItems[0]);
+
+    const allItems = slider.querySelectorAll('.slider-item');
+    let currentIndex = 0;
+    let currentSlideDOMIndex = 1;
+    let isAnimating = false;
+    let isDragging = false;
+    let startPos = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+
+    const slideWidth = () => allItems[0].clientWidth;
+
+    const setSliderPosition = (animate = false) => {
+        slider.style.transition = animate ? 'transform 0.5s ease-in-out' : 'none';
+        currentTranslate = -currentSlideDOMIndex * slideWidth();
+        slider.style.transform = `translateX(${currentTranslate}px)`;
+        prevTranslate = currentTranslate;
+    };
+
+    setSliderPosition();
+
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+    }
+    const dots = dotsContainer.querySelectorAll('.dot');
+    
+    const updateDots = () => {
+        dots.forEach(dot => dot.classList.remove('active'));
+        if (dots[currentIndex]) {
+            dots[currentIndex].classList.add('active');
+        }
+    };
+    updateDots();
+
+    const goToSlide = (index) => {
+        if (isAnimating || index === currentIndex) return;
+        isAnimating = true;
+        currentSlideDOMIndex = index + 1;
+        currentIndex = index;
+        setSliderPosition(true);
+        updateDots();
+    };
+    
+    const moveToNext = () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        currentSlideDOMIndex++;
+        setSliderPosition(true);
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateDots();
+    };
+
+    const moveToPrev = () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        currentSlideDOMIndex--;
+        setSliderPosition(true);
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateDots();
+    };
+
+    prevButton.addEventListener('click', moveToPrev);
+    nextButton.addEventListener('click', moveToNext);
+
+    slider.addEventListener('transitionend', (e) => {
+        if (e.propertyName !== 'transform') return;
+        isAnimating = false;
+        if (currentSlideDOMIndex === 0) {
+            currentSlideDOMIndex = totalSlides;
+            setSliderPosition(false);
+        }
+        if (currentSlideDOMIndex === totalSlides + 1) {
+            currentSlideDOMIndex = 1;
+            setSliderPosition(false);
+        }
+    });
+
+    const getPositionX = e => e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+    const dragStart = e => {
+        if (isAnimating) return;
+        isDragging = true;
+        startPos = getPositionX(e);
+        slider.style.transition = 'none';
+        slider.classList.add('grabbing');
+    };
+    const dragMove = e => {
+        if (!isDragging) return;
+        const currentPosition = getPositionX(e);
+        currentTranslate = prevTranslate + currentPosition - startPos;
+        slider.style.transform = `translateX(${currentTranslate}px)`;
+    };
+    const dragEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        slider.classList.remove('grabbing');
+        const movedBy = currentTranslate - prevTranslate;
+        const threshold = slideWidth() / 4;
+        if (movedBy < -threshold) {
+            moveToNext();
+        } else if (movedBy > threshold) {
+            moveToPrev();
+        } else {
+            setSliderPosition(true);
+        }
+    };
+
+    slider.addEventListener('mousedown', dragStart);
+    slider.addEventListener('touchstart', dragStart, { passive: true });
+    slider.addEventListener('mousemove', dragMove);
+    slider.addEventListener('touchmove', dragMove, { passive: true });
+    slider.addEventListener('mouseup', dragEnd);
+    slider.addEventListener('mouseleave', dragEnd);
+    slider.addEventListener('touchend', dragEnd);
+    window.addEventListener('resize', () => setSliderPosition(false));
+}
+
+function setupScrollAnimations() {
+    const revealElements = document.querySelectorAll('.reveal');
+    if (revealElements.length === 0) return; // 対象がなければ何もしない
+
+    const animateCounter = (counter) => {
+        const target = +counter.getAttribute('data-target');
+        const duration = 1500;
+        const stepTime = Math.max(10, duration / target);
+        let current = 0;
+        const timer = setInterval(() => {
+            current++;
+            counter.innerText = current;
+            if (current >= target) {
+                counter.innerText = target;
+                clearInterval(timer);
+            }
+        }, stepTime);
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                const counterElements = entry.target.querySelectorAll('.counter-value');
+                counterElements.forEach(counter => {
+                   if (!counter.classList.contains('animated')) {
+                        animateCounter(counter);
+                        counter.classList.add('animated');
+                   }
                 });
-                dotsContainer.appendChild(dot);
-            });
-        }
-
-        // スライドの表示を更新
-        function updateSlider(animate = true) {
-            const slideWidth = document.querySelector('.slider-item').offsetWidth; // 各スライドアイテムの現在の幅を取得
-            const offset = -currentSlideDOMIndex * slideWidth;
-            if (animate) {
-                slider.style.transition = 'transform 0.5s ease-in-out';
-            } else {
-                slider.style.transition = 'none';
-            }
-            setSliderTransform(offset);
-            updateDots();
-        }
-
-        // スライダーのtransformを直接設定
-        function setSliderTransform(translateValue) {
-            slider.style.transform = `translateX(${translateValue}px)`;
-            currentTranslate = translateValue;
-        }
-
-        // ドットのアクティブ状態を更新
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                if (index === currentIndex) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
-        }
-
-        // 次のスライドへ
-        function nextSlide() {
-            currentSlideDOMIndex++;
-            currentIndex = (currentIndex + 1) % totalSlides;
-            updateSlider();
-            handleLoopTransition();
-        }
-
-        // 前のスライドへ
-        function prevSlide() {
-            currentSlideDOMIndex--;
-            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-            updateSlider();
-            handleLoopTransition();
-        }
-
-        // 特定のスライドへ移動 (ドットクリック用)
-        function goToSlide(index) {
-            currentIndex = index;
-            currentSlideDOMIndex = index + 1;
-            updateSlider();
-        }
-
-        // ループ処理
-        function handleLoopTransition() {
-            slider.addEventListener('transitionend', () => {
-                if (currentSlideDOMIndex >= actualSlidesInDOM - 1) { // 最後の複製に到達した場合
-                    currentSlideDOMIndex = 1; // 最初のオリジナルに戻る
-                    currentIndex = 0;
-                    updateSlider(false); // アニメーションなしで瞬間移動
-                } else if (currentSlideDOMIndex <= 0) { // 最初の複製に到達した場合
-                    currentSlideDOMIndex = actualSlidesInDOM - 2; // 最後のオリジナルに戻る
-                    currentIndex = totalSlides - 1;
-                    updateSlider(false); // アニメーションなしで瞬間移動
-                }
-            }, { once: true });
-        }
-
-        // --- スワイプイベント処理 ---
-
-        // ドラッグ開始
-        slider.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-            prevTranslate = currentTranslate;
-            slider.style.transition = 'none';
-        });
-
-        slider.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            isDragging = true;
-            prevTranslate = currentTranslate;
-            slider.style.transition = 'none';
-            slider.style.cursor = 'grabbing';
-        });
-
-        // ドラッグ中
-        slider.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const currentX = e.touches[0].clientX;
-            const diffX = currentX - startX;
-            setSliderTransform(prevTranslate + diffX);
-        });
-
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const currentX = e.clientX;
-            const diffX = currentX - startX;
-            setSliderTransform(prevTranslate + diffX);
-        });
-
-        // ドラッグ終了
-        slider.addEventListener('touchend', (e) => {
-            isDragging = false;
-            slider.style.transition = 'transform 0.5s ease-in-out';
-            slider.style.cursor = 'grab';
-
-            const movedBy = currentTranslate - prevTranslate;
-            const threshold = document.querySelector('.slider-item').offsetWidth * 0.2;
-
-            if (movedBy < -threshold) {
-                currentSlideDOMIndex++;
-            } else if (movedBy > threshold) {
-                currentSlideDOMIndex--;
-            }
-            currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
-            updateSlider();
-            handleLoopTransition();
-        });
-
-        slider.addEventListener('mouseup', () => {
-            isDragging = false;
-            slider.style.transition = 'transform 0.5s ease-in-out';
-            slider.style.cursor = 'grab';
-
-            const movedBy = currentTranslate - prevTranslate;
-            const threshold = document.querySelector('.slider-item').offsetWidth * 0.2;
-
-            if (movedBy < -threshold) {
-                currentSlideDOMIndex++;
-            } else if (movedBy > threshold) {
-                currentSlideDOMIndex--;
-            }
-            currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
-            updateSlider();
-            handleLoopTransition();
-        });
-
-        slider.addEventListener('mouseleave', () => {
-            if (isDragging) {
-                isDragging = false;
-                slider.style.transition = 'transform 0.5s ease-in-out';
-                slider.style.cursor = 'grab';
-                currentIndex = (currentSlideDOMIndex - 1 + totalSlides) % totalSlides;
-                updateSlider();
-                handleLoopTransition();
+                observer.unobserve(entry.target);
             }
         });
+    }, {
+        threshold: 0.15
+    });
+    revealElements.forEach(el => revealObserver.observe(el));
+}
+</script>
 
-        // ウィンドウのリサイズ時にスライダーを再計算
-        window.addEventListener('resize', () => {
-            updateSlider(false);
-        });
-
-        // 初期化
-        createDots();
-        updateSlider(false);
-    </script>
 </body>
 </html>
